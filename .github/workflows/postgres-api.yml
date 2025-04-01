@@ -17,5 +17,5 @@ jobs:
           node-version: 20
       - run: echo "Hello world ...."
       - run: ls -al
-      - run: docker build -t dsvangel/mysql-restapi .
+      - run: docker build -t dsvangel/restapipostgres .
       - run: docker images
