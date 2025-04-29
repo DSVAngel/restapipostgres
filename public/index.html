@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --gray-color: #6c757d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f7f9;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .api-config {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .api-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .api-preset {
+            background-color: var(--light-color);
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .api-preset:hover {
+            background-color: #e9ecef;
+        }
+
+        .api-preset.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+        }
+
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background-color: #ddd;
+            cursor: pointer;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+        }
+
+        .tab.active {
+            background-color: white;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+            background-color: white;
+            padding: 20px;
+            border-radius: 0 5px 5px 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .notification {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            color: white;
+            display: none;
+        }
+
+        .notification.success {
+            background-color: var(--success-color);
+        }
+
+        .notification.error {
+            background-color: var(--danger-color);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 500px;
+            max-width: 90%;
+        }
+
+        .close {
+            float: right;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        .api-status {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .status-dot.connected {
+            background-color: var(--success-color);
+        }
+
+        .status-dot.disconnected {
+            background-color: var(--danger-color);
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 2s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .api-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sistema de Gestión de Usuarios</h1>
+            <p>CRUD completo con soporte para múltiples APIs</p>
+        </header>
+
+        <div class="api-config">
+            <h2>Configuración de API</h2>
+            
+            <div class="api-buttons">
+                <div class="api-preset" data-url="http://localhost:8080/api" id="api-local">API Local</div>
+                <div class="api-preset" data-url="http://miservidor2.com/api" id="api-prod">API Producción</div>
+            </div>
+            
+            <div class="form-group" style="margin-top: 15px;">
+                <label for="api-url">URL de la API</label>
+                <input type="text" id="api-url" placeholder="Por ejemplo: http://localhost:8080/api">
+            </div>
+            
+            <button id="save-api" class="btn-success">Guardar Configuración</button>
+            
+            <div class="api-status">
+                <div class="status-dot disconnected" id="api-status-dot"></div>
+                <span id="api-status-text">Desconectado</span>
+            </div>
+        </div>
+
+        <div class="notification" id="notification"></div>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="list">Lista de Usuarios</div>
+            <div class="tab" data-tab="create">Crear Usuario</div>
+        </div>
+
+        <div class="tab-content active" id="list-tab">
+            <h2>Usuarios Registrados</h2>
+            <button id="refresh-users" class="btn-success">Actualizar Lista</button>
+            <div class="loader" id="users-loader"></div>
+            <div id="users-table-container">
+                <table id="users-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Edad</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-tbody">
+                        <!-- Los usuarios se cargarán aquí dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tab-content" id="create-tab">
+            <h2>Crear Nuevo Usuario</h2>
+            <form id="create-user-form">
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="name">Nombre</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="age">Edad</label>
+                    <input type="number" id="age" name="age" min="0" max="120">
+                </div>
+                
+                <div class="form-group">
+                    <label for="comments">Comentarios</label>
+                    <textarea id="comments" name="comments" rows="4"></textarea>
+                </div>
+                
+                <button type="submit" class="btn-success">Crear Usuario</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para editar usuario -->
+    <div class="modal" id="edit-modal">
+        <div class="modal-content">
+            <span class="close" id="close-edit-modal">&times;</span>
+            <h2>Editar Usuario</h2>
+            <form id="edit-user-form">
+                <input type="hidden" id="edit-id">
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="edit-name">Nombre</label>
+                            <input type="text" id="edit-name" name="name" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="edit-email">Email</label>
+                            <input type="email" id="edit-email" name="email" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-age">Edad</label>
+                    <input type="number" id="edit-age" name="age" min="0" max="120">
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-comments">Comentarios</label>
+                    <textarea id="edit-comments" name="comments" rows="4"></textarea>
+                </div>
+                
+                <button type="submit" class="btn-warning">Actualizar Usuario</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para confirmar eliminación -->
+    <div class="modal" id="delete-modal">
+        <div class="modal-content">
+            <span class="close" id="close-delete-modal">&times;</span>
+            <h2>Confirmar Eliminación</h2>
+            <p>¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.</p>
+            <input type="hidden" id="delete-id">
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                <button id="cancel-delete" class="btn-success">Cancelar</button>
+                <button id="confirm-delete" class="btn-danger">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración de APIs
+        const API_CONFIGS = {
+            local: {
+                url: 'http://localhost:8080/api',
+                name: 'API Local'
+            },
+            production: {
+                url: 'http://miservidor2.com/api', // Cambia esto por la URL de tu segunda API
+                name: 'API Producción'
+            }
+        };
+
+        // Estado global
+        let apiUrl = localStorage.getItem('apiUrl') || API_CONFIGS.local.url;
+        let apiConnected = false;
+        let users = [];
+
+        // Elementos DOM
+        const apiUrlInput = document.getElementById('api-url');
+        const saveApiBtn = document.getElementById('save-api');
+        const refreshUsersBtn = document.getElementById('refresh-users');
+        const usersTbody = document.getElementById('users-tbody');
+        const createUserForm = document.getElementById('create-user-form');
+        const editUserForm = document.getElementById('edit-user-form');
+        const editModal = document.getElementById('edit-modal');
+        const deleteModal = document.getElementById('delete-modal');
+        const closeEditModal = document.getElementById('close-edit-modal');
+        const closeDeleteModal = document.getElementById('close-delete-modal');
+        const cancelDelete = document.getElementById('cancel-delete');
+        const confirmDelete = document.getElementById('confirm-delete');
+        const notification = document.getElementById('notification');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const apiStatusDot = document.getElementById('api-status-dot');
+        const apiStatusText = document.getElementById('api-status-text');
+        const usersLoader = document.getElementById('users-loader');
+        const apiLocalBtn = document.getElementById('api-local');
+        const apiProdBtn = document.getElementById('api-prod');
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            // Cargar API URL guardada
+            apiUrlInput.value = apiUrl;
+            
+            // Marcar el botón de API activo
+            updateActiveApiButton();
+            
+            // Cargar usuarios al inicio
+            fetchUsers();
+            
+            // Configurar eventos
+            setupEventListeners();
+        });
+
+        // Actualizar el botón de API activo
+        function updateActiveApiButton() {
+            const apiButtons = document.querySelectorAll('.api-preset');
+            apiButtons.forEach(btn => {
+                if (btn.getAttribute('data-url') === apiUrl) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        // Configurar todos los event listeners
+        function setupEventListeners() {
+            // Botones de API preestablecidos
+            apiLocalBtn.addEventListener('click', () => {
+                apiUrlInput.value = API_CONFIGS.local.url;
+                saveApiConfig();
+            });
+            
+            apiProdBtn.addEventListener('click', () => {
+                apiUrlInput.value = API_CONFIGS.production.url;
+                saveApiConfig();
+            });
+            
+            // Tabs
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // Actualizar tabs activos
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Actualizar contenido de tab activo
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+
+            // Guardar configuración de API
+            saveApiBtn.addEventListener('click', saveApiConfig);
+
+            // Refrescar lista de usuarios
+            refreshUsersBtn.addEventListener('click', fetchUsers);
+
+            // Crear usuario
+            createUserForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                createUser();
+            });
+
+            // Editar usuario
+            editUserForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                updateUser();
+            });
+
+            // Modal de edición
+            closeEditModal.addEventListener('click', () => {
+                editModal.style.display = 'none';
+            });
+
+            // Modal de eliminación
+            closeDeleteModal.addEventListener('click', () => {
+                deleteModal.style.display = 'none';
+            });
+            
+            cancelDelete.addEventListener('click', () => {
+                deleteModal.style.display = 'none';
+            });
+            
+            confirmDelete.addEventListener('click', () => {
+                const userId = document.getElementById('delete-id').value;
+                deleteUser(userId);
+            });
+            
+            // Cerrar modales al hacer clic fuera
+            window.addEventListener('click', (e) => {
+                if (e.target === editModal) {
+                    editModal.style.display = 'none';
+                }
+                if (e.target === deleteModal) {
+                    deleteModal.style.display = 'none';
+                }
+            });
+        }
+
+        // Guardar configuración de API
+        function saveApiConfig() {
+            apiUrl = apiUrlInput.value.trim();
+            if (!apiUrl) {
+                showNotification('La URL de la API no puede estar vacía', 'error');
+                return;
+            }
+            
+            localStorage.setItem('apiUrl', apiUrl);
+            showNotification('Configuración de API guardada correctamente', 'success');
+            
+            // Actualizar botón activo
+            updateActiveApiButton();
+            
+            // Recargar usuarios con la nueva API
+            fetchUsers();
+        }
+
+        // Comprobar conexión de API
+        async function checkApiConnection() {
+            try {
+                const response = await fetch(`${apiUrl}`);
+                apiConnected = response.ok;
+                
+                apiStatusDot.className = apiConnected ? 'status-dot connected' : 'status-dot disconnected';
+                apiStatusText.textContent = apiConnected ? 'Conectado' : 'Desconectado';
+                
+                return apiConnected;
+            } catch (error) {
+                apiConnected = false;
+                apiStatusDot.className = 'status-dot disconnected';
+                apiStatusText.textContent = 'Desconectado';
+                return false;
+            }
+        }
+
+        // Obtener todos los usuarios
+        async function fetchUsers() {
+            usersLoader.style.display = 'block';
+            usersTbody.innerHTML = '';
+            
+            try {
+                // Comprobar conexión
+                const connected = await checkApiConnection();
+                if (!connected) {
+                    showNotification('No se pudo conectar a la API', 'error');
+                    usersLoader.style.display = 'none';
+                    usersTbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center;">No se pudo conectar a la API</td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                // Obtener usuarios
+                const response = await fetch(`${apiUrl}/users`);
+                if (!response.ok) {
+                    throw new Error('Error al obtener usuarios');
+                }
+                
+                const data = await response.json();
+                users = data.users || [];
+                renderUsers();
+                showNotification('Usuarios cargados correctamente', 'success');
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification(`Error: ${error.message}`, 'error');
+                usersTbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center;">Error al cargar usuarios</td>
+                    </tr>
+                `;
+            } finally {
+                usersLoader.style.display = 'none';
+            }
+        }
+
+        // Renderizar tabla de usuarios
+        function renderUsers() {
+            if (users.length === 0) {
+                usersTbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center;">No hay usuarios registrados</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            usersTbody.innerHTML = '';
+            
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.age || 'N/A'}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-warning edit-btn" data-id="${user.id}">Editar</button>
+                            <button class="btn-danger delete-btn" data-id="${user.id}">Eliminar</button>
+                        </div>
+                    </td>
+                `;
+                usersTbody.appendChild(row);
+            });
+            
+            // Añadir event listeners a los botones de acción
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', () => openEditModal(btn.getAttribute('data-id')));
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', () => openDeleteModal(btn.getAttribute('data-id')));
+            });
+        }
+
+        // Crear un nuevo usuario
+        async function createUser() {
+            const userData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                age: document.getElementById('age').value || null,
+                comments: document.getElementById('comments').value || null
+            };
+            
+            try {
+                const response = await fetch(`${apiUrl}/users`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Error al crear usuario');
+                }
+                
+                const data = await response.json();
+                showNotification('Usuario creado correctamente', 'success');
+                
+                // Resetear formulario
+                createUserForm.reset();
+                
+                // Actualizar lista
+                fetchUsers();
+                
+                // Cambiar a la pestaña de lista
+                tabs[0].click();
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Abrir modal de edición
+        function openEditModal(userId) {
+            const user = users.find(u => u.id == userId);
+            if (!user) return;
+            
+            document.getElementById('edit-id').value = user.id;
+            document.getElementById('edit-name').value = user.name || '';
+            document.getElementById('edit-email').value = user.email || '';
+            document.getElementById('edit-age').value = user.age || '';
+            document.getElementById('edit-comments').value = user.comments || '';
+            
+            editModal.style.display = 'flex';
+        }
+
+        // Actualizar usuario
+        async function updateUser() {
+            const userId = document.getElementById('edit-id').value;
+            
+            const userData = {
+                name: document.getElementById('edit-name').value,
+                email: document.getElementById('edit-email').value,
+                age: document.getElementById('edit-age').value || null,
+                comments: document.getElementById('edit-comments').value || null
+            };
+            
+            try {
+                const response = await fetch(`${apiUrl}/users/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Error al actualizar usuario');
+                }
+                
+                showNotification('Usuario actualizado correctamente', 'success');
+                
+                // Cerrar modal
+                editModal.style.display = 'none';
+                
+                // Actualizar lista
+                fetchUsers();
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Abrir modal de eliminación
+        function openDeleteModal(userId) {
+            document.getElementById('delete-id').value = userId;
+            deleteModal.style.display = 'flex';
+        }
+
+        // Eliminar usuario
+        async function deleteUser(userId) {
+            try {
+                const response = await fetch(`${apiUrl}/users/${userId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Error al eliminar usuario');
+                }
+                
+                showNotification('Usuario eliminado correctamente', 'success');
+                
+                // Cerrar modal
+                deleteModal.style.display = 'none';
+                
+                // Actualizar lista
+                fetchUsers();
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Mostrar notificación
+        function showNotification(message, type) {
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            // Ocultar después de 3 segundos
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
