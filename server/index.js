@@ -11,7 +11,6 @@ server.use(cors());
 server.options('*', cors());
 server.use(express.json());
 
-app.use(express.static(path.join(__dirname, 'public')));
 server.use('/api', routes);
 
 
